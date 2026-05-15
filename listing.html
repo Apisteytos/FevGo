@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Open Graph (static/generic — server-side rendering is v2) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="FevGo" />
+  <meta property="og:title" content="Αγγελία ενοικίασης – FevGo" />
+  <meta property="og:description" content="Ενοικιάσεις για Δημοσίους Υπαλλήλους &amp; Στρατιωτικούς. Δες την αγγελία στο FevGo." />
+  <meta property="og:image" content="https://apisteytos.github.io/FevGo/og_image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <title>FevGo – Αγγελία</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --green: #2ECC71;
+      --green-dark: #27AE60;
+      --bg: #0F1117;
+      --surface: #1A1D27;
+      --surface2: #22263A;
+      --border: rgba(255,255,255,0.07);
+      --text: #F0F2F8;
+      --muted: #8A90A8;
+      --accent: #2ECC71;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Header ── */
+    header {
+      width: 100%;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(15,17,23,0.95);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .logo-mark {
+      width: 36px; height: 36px;
+      background: var(--green);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+      letter-spacing: -1px;
+    }
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+    .logo-text span { color: var(--green); }
+
+    /* ── Main card ── */
+    main {
+      width: 100%;
+      max-width: 560px;
+      padding: 24px 16px 40px;
+      flex: 1;
+    }
+
+    /* ── Photo ── */
+    .photo-wrap {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 16px;
+      overflow: hidden;
+      background: var(--surface);
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .photo-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .photo-wrap img.loaded { opacity: 1; }
+    .photo-placeholder {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .photo-placeholder svg { opacity: 0.3; }
+
+    /* ── Skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .sk-title { height: 28px; width: 75%; margin-bottom: 10px; }
+    .sk-sub { height: 18px; width: 50%; margin-bottom: 20px; }
+    .sk-pill { height: 36px; width: 30%; border-radius: 20px; display: inline-block; margin-right: 8px; }
+    .sk-desc { height: 14px; width: 100%; margin-bottom: 6px; }
+    .sk-desc.short { width: 70%; }
+
+    /* ── Listing info ── */
+    .listing-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 1.25;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .listing-location {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .listing-location svg { flex-shrink: 0; }
+
+    /* ── Pills ── */
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .pill.price {
+      background: rgba(46,204,113,0.12);
+      border-color: rgba(46,204,113,0.3);
+      color: var(--green);
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .pill svg { opacity: 0.7; }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* ── Description ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .description {
+      font-size: 14px;
+      line-height: 1.65;
+      color: #B0B6CC;
+    }
+
+    /* ── CTA Button ── */
+    .cta-wrap {
+      margin-top: 28px;
+      position: sticky;
+      bottom: 20px;
+    }
+    .btn-open {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px;
+      border-radius: 14px;
+      background: var(--green);
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.3px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 8px 32px rgba(46,204,113,0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+    .btn-open:hover {
+      background: var(--green-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 36px rgba(46,204,113,0.4);
+    }
+    .btn-open:active { transform: translateY(0); }
+
+    /* ── Error ── */
+    .error-state {
+      text-align: center;
+      padding: 40px 20px;
+      display: none;
+    }
+    .error-state h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .error-state p { color: var(--muted); font-size: 14px; }
+
+    /* ── Rented badge ── */
+    .badge-rented {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: rgba(231,76,60,0.15);
+      border: 1px solid rgba(231,76,60,0.3);
+      border-radius: 20px;
+      color: #E74C3C;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+      width: 100%;
+    }
+    footer a { color: var(--muted); text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">F</div>
+  <div class="logo-text">Fev<span>Go</span></div>
+</header>
+
+<main>
+  <!-- Skeleton (φαίνεται κατά το loading) -->
+  <div id="skeleton">
+    <div class="photo-wrap skeleton" style="margin-bottom:20px;"></div>
+    <div class="skeleton sk-title"></div>
+    <div class="skeleton sk-sub"></div>
+    <div style="margin-bottom:20px;">
+      <span class="skeleton sk-pill"></span>
+      <span class="skeleton sk-pill"></span>
+      <span class="skeleton sk-pill"></span>
+    </div>
+    <div class="skeleton sk-desc"></div>
+    <div class="skeleton sk-desc"></div>
+    <div class="skeleton sk-desc short"></div>
+  </div>
+
+  <!-- Content (κρυφό μέχρι να φορτώσουν τα data) -->
+  <div id="content" style="display:none;">
+    <div class="photo-wrap" id="photoWrap">
+      <div class="photo-placeholder" id="photoPlaceholder">
+        <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        Χωρίς φωτογραφία
+      </div>
+      <img id="listingPhoto" alt="Φωτογραφία αγγελίας" />
+    </div>
+
+    <div id="rentedBadge" class="badge-rented" style="display:none;">
+      <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+      </svg>
+      Ενοικιάστηκε
+    </div>
+
+    <h1 class="listing-title" id="listingTitle"></h1>
+
+    <div class="listing-location" id="listingLocation">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      <span id="locationText"></span>
+    </div>
+
+    <div class="pills" id="pills"></div>
+
+    <div class="divider"></div>
+
+    <div id="descSection" style="display:none;">
+      <div class="section-label">Περιγραφή</div>
+      <div class="description" id="listingDesc"></div>
+      <div class="divider"></div>
+    </div>
+
+    <div class="cta-wrap">
+      <a id="btnOpen" class="btn-open" href="#" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+          <path d="M8 12l3 3 5-5"/>
+        </svg>
+        Άνοιξε στο FevGo
+      </a>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div class="error-state" id="errorState">
+    <h2>Η αγγελία δεν βρέθηκε</h2>
+    <p>Η αγγελία μπορεί να έχει διαγραφεί ή να έχει λήξει.</p>
+    <div class="cta-wrap" style="margin-top:24px;">
+      <a class="btn-open" href="https://play.google.com/store/apps/details?id=com.thodwris.fevgo" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+        </svg>
+        Δες άλλες αγγελίες στο FevGo
+      </a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <a href="https://apisteytos.github.io/FevGo/privacy.html">Πολιτική Απορρήτου</a>
+  &nbsp;·&nbsp;
+  <a href="https://apisteytos.github.io/FevGo/terms.html">Όροι Χρήσης</a>
+</footer>
+
+<!-- Firebase JS SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js';
+  import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js';
+
+  // ── Firebase config (public config — safe to expose) ──
+  const firebaseConfig = {
+    apiKey: "AIzaSyCb_O6AFlCNo6jxvsU6R9rIiMhecdAvKIk",
+    authDomain: "fevgo-294e4.firebaseapp.com",
+    projectId: "fevgo-294e4",
+    storageBucket: "fevgo-294e4.firebasestorage.app",
+    messagingSenderId: "344323970496",
+    appId: "1:344323970496:web:dec2e076215e3df2642425"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ── Parse listing ID from URL ──
+  const params = new URLSearchParams(window.location.search);
+  const listingId = params.get('id');
+
+  const skeleton = document.getElementById('skeleton');
+  const content = document.getElementById('content');
+  const errorState = document.getElementById('errorState');
+
+  if (!listingId) {
+    showError();
+  } else {
+    loadListing(listingId);
+  }
+
+  async function loadListing(id) {
+    try {
+      const docRef = doc(db, 'listings', id);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+        showError();
+        return;
+      }
+
+      const data = docSnap.data();
+      renderListing(id, data);
+    } catch (e) {
+      console.error(e);
+      showError();
+    }
+  }
+
+  function renderListing(id, d) {
+    // Photo
+    const photoEl = document.getElementById('listingPhoto');
+    const photoPlaceholder = document.getElementById('photoPlaceholder');
+    if (d.photoUrls && d.photoUrls.length > 0) {
+      photoPlaceholder.style.display = 'none';
+      photoEl.src = d.photoUrls[0];
+      photoEl.onload = () => photoEl.classList.add('loaded');
+    } else {
+      photoEl.style.display = 'none';
+    }
+
+    // Rented badge
+    if (d.rented) {
+      document.getElementById('rentedBadge').style.display = 'inline-flex';
+    }
+
+    // Title
+    document.getElementById('listingTitle').textContent = d.title || 'Αγγελία';
+
+    // Location
+    const area = d.area ? `${d.area}, ${d.city}` : d.city;
+    document.getElementById('locationText').textContent = area || '';
+
+    // Pills
+    const pillsEl = document.getElementById('pills');
+    const pills = [];
+
+    if (d.price) {
+      pills.push({ label: `${Math.round(d.price)}€/μήνα`, cls: 'price', icon: '€' });
+    }
+    if (d.squareMeters) {
+      pills.push({ label: `${d.squareMeters} τ.μ.`, icon: 'm²' });
+    }
+    if (d.bedrooms) {
+      const label = d.bedrooms === 1 ? '1 υπνοδωμάτιο' : `${d.bedrooms} υπνοδ.`;
+      pills.push({ label, icon: '🛏' });
+    }
+    if (d.floor !== undefined && d.floor !== null) {
+      const floorLabel = d.floor === 0 ? 'Ισόγειο' : `${d.floor}ος όροφος`;
+      pills.push({ label: floorLabel, icon: '🏢' });
+    }
+
+    pillsEl.innerHTML = pills.map(p =>
+      `<div class="pill ${p.cls || ''}">
+        <span style="font-size:12px;">${p.icon}</span>
+        ${p.label}
+      </div>`
+    ).join('');
+
+    // Description
+    if (d.description && d.description.trim().length > 0) {
+      const descSection = document.getElementById('descSection');
+      const descEl = document.getElementById('listingDesc');
+      const maxChars = 300;
+      const text = d.description.trim();
+      descEl.textContent = text.length > maxChars ? text.substring(0, maxChars) + '…' : text;
+      descSection.style.display = 'block';
+    }
+
+    // CTA Button — deep link → fallback Play Store
+    const deepLink = `fevgo://listing/${id}`;
+    const playStoreUrl = `https://play.google.com/store/apps/details?id=com.thodwris.fevgo`;
+    const appLink = `https://apisteytos.github.io/FevGo/listing.html?id=${id}`;
+
+    const btnOpen = document.getElementById('btnOpen');
+    btnOpen.href = playStoreUrl;
+    btnOpen.onclick = (e) => {
+      e.preventDefault();
+      // Δοκιμή deep link — αν αποτύχει (app δεν υπάρχει) → Play Store
+      const start = Date.now();
+      window.location.href = deepLink;
+      setTimeout(() => {
+        if (Date.now() - start < 2000) {
+          window.location.href = playStoreUrl;
+        }
+      }, 1500);
+    };
+
+    // Show content
+    skeleton.style.display = 'none';
+    content.style.display = 'block';
+  }
+
+  function showError() {
+    skeleton.style.display = 'none';
+    errorState.style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

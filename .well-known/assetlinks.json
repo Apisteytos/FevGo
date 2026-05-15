@@ -1,1 +1,12 @@
-
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.thodwris.fevgo",
+      "sha256_cert_fingerprints": [
+        "70:64:A2:18:09:37:45:17:01:0F:C0:FA:A0:3A:C7:00:AA:E0:A2:E2:BB:92:A4:75:08:50:98:01:55:83:2F:B2"
+      ]
+    }
+  }
+]

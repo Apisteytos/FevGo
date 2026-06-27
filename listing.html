@@ -429,8 +429,15 @@
     if (d.squareMeters) {
       pills.push({ label: `${d.squareMeters} τ.μ.`, icon: 'm²' });
     }
-    if (d.bedrooms) {
-      const label = d.bedrooms === 1 ? '1 υπνοδωμάτιο' : `${d.bedrooms} υπνοδ.`;
+    if (d.bedrooms !== undefined && d.bedrooms !== null) {
+      let label;
+      if (d.bedrooms === 0) {
+        label = 'Γκαρσονιέρα';
+      } else if (d.bedrooms === 1) {
+        label = '1 υπνοδωμάτιο';
+      } else {
+        label = `${d.bedrooms} υπνοδ.`;
+      }
       pills.push({ label, icon: '🛏' });
     }
     if (d.floor !== undefined && d.floor !== null) {
